@@ -3,6 +3,18 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#define DISPLAY_PORTX PORTB
+
+namespace {
+constexpr uint8_t SEG_A(1 << PB0);
+constexpr uint8_t SEG_B(1 << PB1);
+constexpr uint8_t SEG_C(1 << PB2);
+constexpr uint8_t SEG_D(1 << PB3);
+constexpr uint8_t SEG_E(1 << PB4);
+constexpr uint8_t SEG_F(1 << PB5);
+constexpr uint8_t SEG_G(1 << PB6);
+} // namespace
+
 void display_c::init()
 {
 	DDRB = 0xFF;
@@ -13,8 +25,13 @@ void display_c::init()
 
 void display_c::off()
 {
-	show_segment(segment_e::SEGMENT_ALL_OFF);
+	turn_segments_off();
 	select_digit(digit_e::DIGIT_OFF);
+}
+
+void display_c::turn_segments_off()
+{
+	DISPLAY_PORTX &= ~(SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G);
 }
 
 void display_c::calculate_digits(uint16_t number)
@@ -54,111 +71,44 @@ void display_c::select_digit(display_c::digit_e digit)
 	}
 }
 
-void display_c::show_segment(display_c::segment_e segment)
+void display_c::show_segments_for_digit(uint8_t digit)
 {
 
-	switch (segment) {
-	case segment_e::SEGMENT_ALL_OFF:
-		PORTB &= 0x80;
-		break;
-	case segment_e::SEGMENT_A:
-		PORTB |= (1 << PB0);
-		break;
-	case segment_e::SEGMENT_B:
-		PORTB |= (1 << PB1);
-		break;
-	case segment_e::SEGMENT_C:
-		PORTB |= (1 << PB2);
-		break;
-	case segment_e::SEGMENT_D:
-		PORTB |= (1 << PB3);
-		break;
-	case segment_e::SEGMENT_E:
-		PORTB |= (1 << PB4);
-		break;
-	case segment_e::SEGMENT_F:
-		PORTB |= (1 << PB5);
-		break;
-	case segment_e::SEGMENT_G:
-		PORTB |= (1 << PB6);
-		break;
-	}
-}
-
-void display_c::display_single_number(uint8_t digit)
-{
-
-	show_segment(segment_e::SEGMENT_ALL_OFF);
+	DISPLAY_PORTX &= ~(SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G);
 
 	switch (digit) {
 	case 0:
-		show_segment(segment_e::SEGMENT_A);
-		show_segment(segment_e::SEGMENT_B);
-		show_segment(segment_e::SEGMENT_C);
-		show_segment(segment_e::SEGMENT_D);
-		show_segment(segment_e::SEGMENT_E);
-		show_segment(segment_e::SEGMENT_F);
+		DISPLAY_PORTX |= SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F;
 		break;
 	case 1:
-		show_segment(segment_e::SEGMENT_B);
-		show_segment(segment_e::SEGMENT_C);
+		DISPLAY_PORTX |= SEG_B | SEG_C;
 		break;
 	case 2:
-		show_segment(segment_e::SEGMENT_A);
-		show_segment(segment_e::SEGMENT_B);
-		show_segment(segment_e::SEGMENT_G);
-		show_segment(segment_e::SEGMENT_E);
-		show_segment(segment_e::SEGMENT_D);
+		DISPLAY_PORTX |= SEG_A | SEG_B | SEG_G | SEG_E | SEG_D;
 		break;
 	case 3:
-		show_segment(segment_e::SEGMENT_A);
-		show_segment(segment_e::SEGMENT_B);
-		show_segment(segment_e::SEGMENT_G);
-		show_segment(segment_e::SEGMENT_C);
-		show_segment(segment_e::SEGMENT_D);
+		DISPLAY_PORTX |= SEG_A | SEG_B | SEG_G | SEG_C | SEG_D;
 		break;
 	case 4:
-		show_segment(segment_e::SEGMENT_F);
-		show_segment(segment_e::SEGMENT_G);
-		show_segment(segment_e::SEGMENT_B);
-		show_segment(segment_e::SEGMENT_C);
+		DISPLAY_PORTX |= SEG_F | SEG_G | SEG_B | SEG_C;
 		break;
 	case 5:
-		show_segment(segment_e::SEGMENT_A);
-		show_segment(segment_e::SEGMENT_F);
-		show_segment(segment_e::SEGMENT_G);
-		show_segment(segment_e::SEGMENT_C);
-		show_segment(segment_e::SEGMENT_D);
+		DISPLAY_PORTX |= SEG_A | SEG_F | SEG_G | SEG_C | SEG_D;
 		break;
 	case 6:
-		show_segment(segment_e::SEGMENT_A);
-		show_segment(segment_e::SEGMENT_F);
-		show_segment(segment_e::SEGMENT_G);
-		show_segment(segment_e::SEGMENT_C);
-		show_segment(segment_e::SEGMENT_D);
-		show_segment(segment_e::SEGMENT_E);
+		DISPLAY_PORTX |= SEG_A | SEG_F | SEG_G | SEG_C | SEG_D | SEG_E;
 		break;
 	case 7:
-		show_segment(segment_e::SEGMENT_A);
-		show_segment(segment_e::SEGMENT_B);
-		show_segment(segment_e::SEGMENT_C);
+		DISPLAY_PORTX |= SEG_A | SEG_B | SEG_C;
 		break;
 	case 8:
-		show_segment(segment_e::SEGMENT_A);
-		show_segment(segment_e::SEGMENT_B);
-		show_segment(segment_e::SEGMENT_C);
-		show_segment(segment_e::SEGMENT_D);
-		show_segment(segment_e::SEGMENT_E);
-		show_segment(segment_e::SEGMENT_F);
-		show_segment(segment_e::SEGMENT_G);
+		DISPLAY_PORTX |= SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G;
 		break;
 	case 9:
-		show_segment(segment_e::SEGMENT_A);
-		show_segment(segment_e::SEGMENT_B);
-		show_segment(segment_e::SEGMENT_C);
-		show_segment(segment_e::SEGMENT_D);
-		show_segment(segment_e::SEGMENT_F);
-		show_segment(segment_e::SEGMENT_G);
+		DISPLAY_PORTX |= SEG_A | SEG_B | SEG_C | SEG_D | SEG_F | SEG_G;
+		break;
+	default:
+		DISPLAY_PORTX |= SEG_A | SEG_G | SEG_D;
 		break;
 	}
 }
@@ -171,19 +121,19 @@ void display_c::show(uint16_t number)
 	}
 
 	select_digit(digit_e::DIGIT_1);
-	display_single_number(m_n3);
+	show_segments_for_digit(m_n3);
 	off();
 
 	select_digit(digit_e::DIGIT_2);
-	display_single_number(m_n2);
+	show_segments_for_digit(m_n2);
 	off();
 
 	select_digit(digit_e::DIGIT_3);
-	display_single_number(m_n1);
+	show_segments_for_digit(m_n1);
 	off();
 
 	select_digit(digit_e::DIGIT_4);
-	display_single_number(m_n0);
+	show_segments_for_digit(m_n0);
 	off();
 }
 
@@ -192,28 +142,33 @@ void display_c::test()
 	auto fnc_iterate_segments = [&] {
 		constexpr double delay_ms = 20;
 
-		show_segment(segment_e::SEGMENT_A);
+		turn_segments_off();
+		DISPLAY_PORTX |= SEG_A;
 		_delay_ms(delay_ms);
 
-		show_segment(segment_e::SEGMENT_B);
+		turn_segments_off();
+		DISPLAY_PORTX |= SEG_B;
 		_delay_ms(delay_ms);
 
-		show_segment(segment_e::SEGMENT_C);
+		turn_segments_off();
+		DISPLAY_PORTX |= SEG_C;
 		_delay_ms(delay_ms);
 
-		show_segment(segment_e::SEGMENT_D);
+		turn_segments_off();
+		DISPLAY_PORTX |= SEG_D;
 		_delay_ms(delay_ms);
 
-		show_segment(segment_e::SEGMENT_E);
+		turn_segments_off();
+		DISPLAY_PORTX |= SEG_E;
 		_delay_ms(delay_ms);
 
-		show_segment(segment_e::SEGMENT_F);
+		turn_segments_off();
+		DISPLAY_PORTX |= SEG_F;
 		_delay_ms(delay_ms);
 
-		show_segment(segment_e::SEGMENT_G);
+		turn_segments_off();
+		DISPLAY_PORTX |= SEG_G;
 		_delay_ms(delay_ms);
-
-		show_segment(segment_e::SEGMENT_ALL_OFF);
 	};
 
 	select_digit(digit_e::DIGIT_1);
