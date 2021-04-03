@@ -43,8 +43,8 @@ EXTRA_FLAGS = -DF_CPU=$(F_CPU)UL
 # List of all sources (only source-files)
 SOURCES  = main.cpp
 SOURCES += display.cpp
-#SOURCES += spimaster.cpp
-#SOURCES += cartridge.c 
+SOURCES += buttons.cpp
+SOURCES += state_machine.cpp
 #SOURCES += protocol.c 
 #SOURCES += core.c
 #SOURCES += logger.c
