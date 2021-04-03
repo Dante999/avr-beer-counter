@@ -25,11 +25,13 @@ private:
 	void calculate_digits(uint16_t number);
 	void select_digit(digit_e digit);
 	void show_segments_for_digit(uint8_t digit);
+	void show_segments_for_char(char c);
 
 public:
 	void init();
 	void off();
 	void show(uint16_t number);
+	void show(char a, char b, char c, char d);
 	void test();
 };
 

@@ -13,6 +13,7 @@ private:
 	static void handle_state_decrease();
 	static void handle_state_show_current();
 	static void handle_state_show_changed();
+	static void handle_state_show_achievement();
 
 public:
 	static void init();

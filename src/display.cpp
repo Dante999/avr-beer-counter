@@ -73,8 +73,7 @@ void display_c::select_digit(display_c::digit_e digit)
 
 void display_c::show_segments_for_digit(uint8_t digit)
 {
-
-	DISPLAY_PORTX &= ~(SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G);
+	turn_segments_off();
 
 	switch (digit) {
 	case 0:
@@ -113,6 +112,32 @@ void display_c::show_segments_for_digit(uint8_t digit)
 	}
 }
 
+void display_c::show_segments_for_char(char c)
+{
+	turn_segments_off();
+
+	switch (c) {
+	case ' ':
+		turn_segments_off();
+		break;
+	case 'B':
+		DISPLAY_PORTX |= SEG_F | SEG_E | SEG_D | SEG_C | SEG_G;
+		break;
+	case 'E':
+		DISPLAY_PORTX |= SEG_A | SEG_F | SEG_G | SEG_E | SEG_D;
+		break;
+	case 'I':
+		DISPLAY_PORTX |= SEG_F | SEG_E;
+		break;
+	case 'R':
+		DISPLAY_PORTX |= SEG_E | SEG_G;
+		break;
+	default:
+		DISPLAY_PORTX |= SEG_A | SEG_G | SEG_D;
+		break;
+	}
+}
+
 void display_c::show(uint16_t number)
 {
 
@@ -134,6 +159,25 @@ void display_c::show(uint16_t number)
 
 	select_digit(digit_e::DIGIT_4);
 	show_segments_for_digit(m_n0);
+	off();
+}
+
+void display_c::show(char a, char b, char c, char d)
+{
+	select_digit(digit_e::DIGIT_1);
+	show_segments_for_char(a);
+	off();
+
+	select_digit(digit_e::DIGIT_2);
+	show_segments_for_char(b);
+	off();
+
+	select_digit(digit_e::DIGIT_3);
+	show_segments_for_char(c);
+	off();
+
+	select_digit(digit_e::DIGIT_4);
+	show_segments_for_char(d);
 	off();
 }
 
@@ -182,4 +226,6 @@ void display_c::test()
 
 	select_digit(digit_e::DIGIT_4);
 	fnc_iterate_segments();
+
+	off();
 }

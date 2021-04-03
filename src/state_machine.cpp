@@ -11,7 +11,14 @@ constexpr cycles_t MAX_CYCLES_INCREASE_DECRASE = 1000;
 
 constexpr cycles_t MAX_CYCLES_BLINK = 2000;
 
-enum state_e { STATE_STANDBY, STATE_INCREASE, STATE_SHOW_CHANGED_COUNTER, STATE_DECREASE, STATE_SHOW_CURRENT_COUNTER };
+enum state_e {
+	STATE_STANDBY,
+	STATE_INCREASE,
+	STATE_SHOW_CHANGED_COUNTER,
+	STATE_DECREASE,
+	STATE_SHOW_CURRENT_COUNTER,
+	STATE_SHOW_ACHIEVEMENT
+};
 
 display_c m_display;
 buttons_c m_buttons;
@@ -90,6 +97,20 @@ void state_machine_c::handle_state_show_changed()
 	}
 }
 
+void state_machine_c::handle_state_show_achievement()
+{
+	static cycles_t cycles = 0;
+
+	if (cycles < MAX_CYCLES_SHOW_COUNTER) {
+		m_display.show('B', 'E', 'E', 'R');
+		++cycles;
+	}
+	else {
+		cycles  = 0;
+		m_state = state_e::STATE_SHOW_CHANGED_COUNTER;
+	}
+}
+
 void state_machine_c::handle_state_increase()
 {
 	static cycles_t cycles = 0;
@@ -105,7 +126,13 @@ void state_machine_c::handle_state_increase()
 	else {
 		cycles = 0;
 		++m_counter;
-		m_state = state_e::STATE_SHOW_CHANGED_COUNTER;
+
+		if (m_counter % 100 == 0) {
+			m_state = state_e::STATE_SHOW_ACHIEVEMENT;
+		}
+		else {
+			m_state = state_e::STATE_SHOW_CHANGED_COUNTER;
+		}
 	}
 }
 
@@ -133,7 +160,7 @@ void state_machine_c::init()
 	m_display.init();
 	m_buttons.init();
 	m_state   = state_e::STATE_STANDBY;
-	m_counter = 0;
+	m_counter = 98;
 }
 
 void state_machine_c::run()
@@ -148,6 +175,9 @@ void state_machine_c::run()
 		break;
 	case state_e::STATE_SHOW_CHANGED_COUNTER:
 		handle_state_show_changed();
+		break;
+	case state_e::STATE_SHOW_ACHIEVEMENT:
+		handle_state_show_achievement();
 		break;
 	case state_e::STATE_DECREASE:
 		handle_state_decrease();
