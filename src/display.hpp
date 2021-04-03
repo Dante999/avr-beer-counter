@@ -24,7 +24,7 @@ private:
 		SEGMENT_G
 	};
 
-	uint16_t m_last;
+	uint16_t m_last{0};
 	uint8_t  m_n0{0};
 	uint8_t  m_n1{0};
 	uint8_t  m_n2{0};

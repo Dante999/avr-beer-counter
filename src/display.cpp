@@ -7,6 +7,8 @@ void display_c::init()
 {
 	DDRB = 0xFF;
 	DDRD |= (1 << PD4) | (1 << PD5) | (1 << PD6);
+
+	test();
 }
 
 void display_c::off()
@@ -187,26 +189,42 @@ void display_c::show(uint16_t number)
 
 void display_c::test()
 {
+	auto fnc_iterate_segments = [&] {
+		constexpr double delay_ms = 20;
+
+		show_segment(segment_e::SEGMENT_A);
+		_delay_ms(delay_ms);
+
+		show_segment(segment_e::SEGMENT_B);
+		_delay_ms(delay_ms);
+
+		show_segment(segment_e::SEGMENT_C);
+		_delay_ms(delay_ms);
+
+		show_segment(segment_e::SEGMENT_D);
+		_delay_ms(delay_ms);
+
+		show_segment(segment_e::SEGMENT_E);
+		_delay_ms(delay_ms);
+
+		show_segment(segment_e::SEGMENT_F);
+		_delay_ms(delay_ms);
+
+		show_segment(segment_e::SEGMENT_G);
+		_delay_ms(delay_ms);
+
+		show_segment(segment_e::SEGMENT_ALL_OFF);
+	};
+
 	select_digit(digit_e::DIGIT_1);
+	fnc_iterate_segments();
 
-	show_segment(segment_e::SEGMENT_A);
-	_delay_ms(100);
+	select_digit(digit_e::DIGIT_2);
+	fnc_iterate_segments();
 
-	show_segment(segment_e::SEGMENT_B);
-	_delay_ms(100);
+	select_digit(digit_e::DIGIT_3);
+	fnc_iterate_segments();
 
-	show_segment(segment_e::SEGMENT_C);
-	_delay_ms(100);
-
-	show_segment(segment_e::SEGMENT_D);
-	_delay_ms(100);
-
-	show_segment(segment_e::SEGMENT_E);
-	_delay_ms(100);
-
-	show_segment(segment_e::SEGMENT_F);
-	_delay_ms(100);
-
-	show_segment(segment_e::SEGMENT_G);
-	_delay_ms(100);
+	select_digit(digit_e::DIGIT_4);
+	fnc_iterate_segments();
 }

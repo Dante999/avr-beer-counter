@@ -5,7 +5,6 @@
 
 int main(void)
 {
-
 	state_machine_c::init();
 
 	while (1) {
