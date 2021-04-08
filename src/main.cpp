@@ -1,3 +1,4 @@
+#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -5,7 +6,10 @@
 
 int main(void)
 {
+
 	state_machine_c::init();
+
+	sei();
 
 	while (1) {
 		state_machine_c::run();

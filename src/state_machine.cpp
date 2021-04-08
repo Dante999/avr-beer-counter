@@ -1,5 +1,7 @@
 #include "state_machine.hpp"
 
+#include <avr/sleep.h>
+
 #include "buttons.hpp"
 #include "display.hpp"
 
@@ -59,6 +61,9 @@ void state_machine_c::handle_state_standby()
 	else if (m_buttons.is_bottle_button_pressed()) {
 		m_state = state_e::STATE_INCREASE;
 	}
+
+	set_sleep_mode(SLEEP_MODE_IDLE);
+	sleep_mode(); // in den Schlafmodus wechseln
 }
 
 void state_machine_c::handle_state_show_current()
@@ -188,6 +193,3 @@ void state_machine_c::run()
 	}
 }
 
-void state_machine_c::on_user_button_pressed() {}
-
-void state_machine_c::on_bottle_button_pressed() {}

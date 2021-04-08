@@ -18,8 +18,6 @@ private:
 public:
 	static void init();
 	static void run();
-	static void on_user_button_pressed();
-	static void on_bottle_button_pressed();
 };
 
 #endif // STATE_MACHINE_HPP
