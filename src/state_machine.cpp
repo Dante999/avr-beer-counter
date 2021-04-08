@@ -165,7 +165,7 @@ void state_machine_c::init()
 	m_display.init();
 	m_buttons.init();
 	m_state   = state_e::STATE_STANDBY;
-	m_counter = 98;
+	m_counter = 0;
 }
 
 void state_machine_c::run()
@@ -192,4 +192,3 @@ void state_machine_c::run()
 		break;
 	}
 }
-
