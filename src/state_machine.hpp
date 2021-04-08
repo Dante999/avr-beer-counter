@@ -6,14 +6,12 @@
 class state_machine_c {
 
 private:
-	static void blink_counter_value();
-
-	static void handle_state_standby();
-	static void handle_state_increase();
-	static void handle_state_decrease();
-	static void handle_state_show_current();
-	static void handle_state_show_changed();
-	static void handle_state_show_achievement();
+	static void standby();
+	static void increase_counter();
+	static void decrease_counter();
+	static void show_current_counter();
+	static void show_changed_counter();
+	static void show_achievement();
 
 public:
 	static void init();

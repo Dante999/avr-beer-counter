@@ -12,13 +12,11 @@ using cycles_t = uint16_t;
 constexpr cycles_t MAX_CYCLES_SHOW_COUNTER     = 10000;
 constexpr cycles_t MAX_CYCLES_INCREASE_DECRASE = 1000;
 
-constexpr cycles_t MAX_CYCLES_BLINK = 2000;
-
 enum state_e {
 	STATE_STANDBY,
-	STATE_INCREASE,
+	STATE_INCREASE_COUNTER,
+	STATE_DECREASE_COUNTER,
 	STATE_SHOW_CHANGED_COUNTER,
-	STATE_DECREASE,
 	STATE_SHOW_CURRENT_COUNTER,
 	STATE_SHOW_ACHIEVEMENT
 };
@@ -30,46 +28,22 @@ state_e   m_state;
 
 } // namespace
 
-void state_machine_c::blink_counter_value()
-{
-	m_display.show(m_counter);
-
-	//	static uint16_t temp = 0;
-	//	static bool     show = true;
-
-	//	if (temp < MAX_CYCLES_BLINK) {
-
-	//		if (show) {
-	//			m_display.show(m_counter);
-	//		}
-	//		else {
-	//			m_display.off();
-	//		}
-
-	//		++temp;
-	//	}
-	//	else {
-	//		show = !show;
-	//		temp = 0;
-	//	}
-}
-
-void state_machine_c::handle_state_standby()
+void state_machine_c::standby()
 {
 	if (m_buttons.is_user_button_pressed()) {
 		m_state   = state_e::STATE_SHOW_CURRENT_COUNTER;
 		m_counter = storage_c::load_counter();
 	}
 	else if (m_buttons.is_bottle_button_pressed()) {
-		m_state   = state_e::STATE_INCREASE;
+		m_state   = state_e::STATE_INCREASE_COUNTER;
 		m_counter = storage_c::load_counter();
 	}
 
 	set_sleep_mode(SLEEP_MODE_IDLE);
-	sleep_mode(); // in den Schlafmodus wechseln
+	sleep_mode();
 }
 
-void state_machine_c::handle_state_show_current()
+void state_machine_c::show_current_counter()
 {
 	static cycles_t cycles = 0;
 
@@ -83,20 +57,20 @@ void state_machine_c::handle_state_show_current()
 	}
 }
 
-void state_machine_c::handle_state_show_changed()
+void state_machine_c::show_changed_counter()
 {
 	static cycles_t cycles = 0;
 
 	if (m_buttons.is_bottle_button_pressed()) {
-		m_state = state_e::STATE_INCREASE;
+		m_state = state_e::STATE_INCREASE_COUNTER;
 		cycles  = 0;
 	}
 	else if (m_buttons.is_user_button_pressed()) {
-		m_state = state_e::STATE_DECREASE;
+		m_state = state_e::STATE_DECREASE_COUNTER;
 		cycles  = 0;
 	}
 	else if (cycles < MAX_CYCLES_SHOW_COUNTER) {
-		blink_counter_value();
+		m_display.show(m_counter);
 		++cycles;
 	}
 	else {
@@ -106,7 +80,7 @@ void state_machine_c::handle_state_show_changed()
 	}
 }
 
-void state_machine_c::handle_state_show_achievement()
+void state_machine_c::show_achievement()
 {
 	static cycles_t cycles = 0;
 
@@ -120,7 +94,7 @@ void state_machine_c::handle_state_show_achievement()
 	}
 }
 
-void state_machine_c::handle_state_increase()
+void state_machine_c::increase_counter()
 {
 	static cycles_t cycles = 0;
 
@@ -145,7 +119,7 @@ void state_machine_c::handle_state_increase()
 	}
 }
 
-void state_machine_c::handle_state_decrease()
+void state_machine_c::decrease_counter()
 {
 	static cycles_t cycles = 0;
 
@@ -178,22 +152,22 @@ void state_machine_c::run()
 	switch (m_state) {
 
 	case state_e::STATE_STANDBY:
-		handle_state_standby();
+		standby();
 		break;
-	case state_e::STATE_INCREASE:
-		handle_state_increase();
+	case state_e::STATE_INCREASE_COUNTER:
+		increase_counter();
 		break;
 	case state_e::STATE_SHOW_CHANGED_COUNTER:
-		handle_state_show_changed();
+		show_changed_counter();
 		break;
 	case state_e::STATE_SHOW_ACHIEVEMENT:
-		handle_state_show_achievement();
+		show_achievement();
 		break;
-	case state_e::STATE_DECREASE:
-		handle_state_decrease();
+	case state_e::STATE_DECREASE_COUNTER:
+		decrease_counter();
 		break;
 	case state_e::STATE_SHOW_CURRENT_COUNTER:
-		handle_state_show_current();
+		show_current_counter();
 		break;
 	}
 }
