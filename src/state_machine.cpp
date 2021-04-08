@@ -85,12 +85,23 @@ void state_machine_c::show_achievement()
 	static cycles_t cycles = 0;
 
 	if (cycles < MAX_CYCLES_SHOW_COUNTER) {
+		/*
+		 * Ideas:
+		 * 10'000: WHAT THE FUCK (slideshow)
+		 * 09'000: GOGO
+		 * 08'000: NICE
+		 * 07'000: MORE
+		 */
 		m_display.show('B', 'E', 'E', 'R');
 		++cycles;
 	}
 	else {
 		cycles  = 0;
 		m_state = state_e::STATE_SHOW_CHANGED_COUNTER;
+
+		if (m_counter > 9999) {
+			m_counter = 0;
+		}
 	}
 }
 
@@ -133,7 +144,11 @@ void state_machine_c::decrease_counter()
 	}
 	else {
 		cycles = 0;
-		--m_counter;
+
+		if (m_counter > 0) {
+			--m_counter;
+		}
+
 		m_state = state_e::STATE_SHOW_CHANGED_COUNTER;
 	}
 }
