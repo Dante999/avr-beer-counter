@@ -4,6 +4,7 @@
 
 #include "buttons.hpp"
 #include "display.hpp"
+#include "storage.hpp"
 
 namespace {
 using cycles_t = uint16_t;
@@ -56,10 +57,12 @@ void state_machine_c::blink_counter_value()
 void state_machine_c::handle_state_standby()
 {
 	if (m_buttons.is_user_button_pressed()) {
-		m_state = state_e::STATE_SHOW_CURRENT_COUNTER;
+		m_state   = state_e::STATE_SHOW_CURRENT_COUNTER;
+		m_counter = storage_c::load_counter();
 	}
 	else if (m_buttons.is_bottle_button_pressed()) {
-		m_state = state_e::STATE_INCREASE;
+		m_state   = state_e::STATE_INCREASE;
+		m_counter = storage_c::load_counter();
 	}
 
 	set_sleep_mode(SLEEP_MODE_IDLE);
@@ -99,6 +102,7 @@ void state_machine_c::handle_state_show_changed()
 	else {
 		cycles  = 0;
 		m_state = state_e::STATE_STANDBY;
+		storage_c::save_counter(m_counter);
 	}
 }
 
@@ -162,6 +166,7 @@ void state_machine_c::handle_state_decrease()
 
 void state_machine_c::init()
 {
+	storage_c::init();
 	m_display.init();
 	m_buttons.init();
 	m_state   = state_e::STATE_STANDBY;
