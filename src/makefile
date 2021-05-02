@@ -42,7 +42,7 @@ EXTRA_FLAGS = -DF_CPU=$(F_CPU)UL
 
 # List of all sources (only source-files)
 SOURCES  = main.cpp
-SOURCES += display.cpp
+SOURCES += display.c
 SOURCES += buttons.c
 SOURCES += state_machine.cpp
 SOURCES += storage.c

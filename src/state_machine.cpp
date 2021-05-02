@@ -3,7 +3,7 @@
 #include <avr/sleep.h>
 
 #include "buttons.h"
-#include "display.hpp"
+#include "display.h"
 #include "storage.h"
 
 namespace {
@@ -21,9 +21,8 @@ enum state_e {
 	STATE_SHOW_ACHIEVEMENT
 };
 
-display_c m_display;
-uint16_t  m_counter;
-state_e   m_state;
+uint16_t m_counter;
+state_e  m_state;
 
 } // namespace
 
@@ -47,7 +46,7 @@ void state_machine_c::show_current_counter()
 	static cycles_t cycles = 0;
 
 	if (cycles < MAX_CYCLES_SHOW_COUNTER) {
-		m_display.show(m_counter);
+		display_show_number(m_counter);
 		++cycles;
 	}
 	else {
@@ -69,7 +68,7 @@ void state_machine_c::show_changed_counter()
 		cycles  = 0;
 	}
 	else if (cycles < MAX_CYCLES_SHOW_COUNTER) {
-		m_display.show(m_counter);
+		display_show_number(m_counter);
 		++cycles;
 	}
 	else {
@@ -91,7 +90,7 @@ void state_machine_c::show_achievement()
 		 * 08'000: NICE
 		 * 07'000: MORE
 		 */
-		m_display.show('B', 'E', 'E', 'R');
+		display_show_text('B', 'E', 'E', 'R');
 		++cycles;
 	}
 	else {
@@ -114,7 +113,7 @@ void state_machine_c::increase_counter()
 			++cycles;
 		}
 
-		m_display.off();
+		display_off();
 	}
 	else {
 		cycles = 0;
@@ -139,7 +138,7 @@ void state_machine_c::decrease_counter()
 			++cycles;
 		}
 
-		m_display.off();
+		display_off();
 	}
 	else {
 		cycles = 0;
@@ -155,7 +154,7 @@ void state_machine_c::decrease_counter()
 void state_machine_c::init()
 {
 	storage_init();
-	m_display.init();
+	display_init();
 	buttons_init();
 	m_state   = state_e::STATE_STANDBY;
 	m_counter = 0;
