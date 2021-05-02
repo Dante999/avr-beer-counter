@@ -1,9 +1,11 @@
-#include "buttons.hpp"
+#include "buttons.h"
+
+#include <stdbool.h>
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-void buttons_c::init()
+void buttons_init()
 {
 	DDRD &= ~((1 << PD2) | (1 << PD3));
 	PORTD |= (1 << PD2) | (1 << PD3);
@@ -25,12 +27,12 @@ ISR(INT0_vect)
 	// only used for waking up the controller...
 }
 
-bool buttons_c::is_user_button_pressed()
+bool buttons_is_user_button_pressed()
 {
 	return !(PIND & (1 << PD3)) ? true : false;
 }
 
-bool buttons_c::is_bottle_button_pressed()
+bool buttons_is_bottle_button_pressed()
 {
 	return !(PIND & (1 << PD2)) ? true : false;
 }

@@ -2,9 +2,9 @@
 
 #include <avr/sleep.h>
 
-#include "buttons.hpp"
+#include "buttons.h"
 #include "display.hpp"
-#include "storage.hpp"
+#include "storage.h"
 
 namespace {
 using cycles_t = uint16_t;
@@ -22,7 +22,6 @@ enum state_e {
 };
 
 display_c m_display;
-buttons_c m_buttons;
 uint16_t  m_counter;
 state_e   m_state;
 
@@ -30,13 +29,13 @@ state_e   m_state;
 
 void state_machine_c::standby()
 {
-	if (m_buttons.is_user_button_pressed()) {
+	if (buttons_is_user_button_pressed()) {
 		m_state   = state_e::STATE_SHOW_CURRENT_COUNTER;
-		m_counter = storage_c::load_counter();
+		m_counter = storage_load_counter();
 	}
-	else if (m_buttons.is_bottle_button_pressed()) {
+	else if (buttons_is_bottle_button_pressed()) {
 		m_state   = state_e::STATE_INCREASE_COUNTER;
-		m_counter = storage_c::load_counter();
+		m_counter = storage_load_counter();
 	}
 
 	set_sleep_mode(SLEEP_MODE_IDLE);
@@ -61,11 +60,11 @@ void state_machine_c::show_changed_counter()
 {
 	static cycles_t cycles = 0;
 
-	if (m_buttons.is_bottle_button_pressed()) {
+	if (buttons_is_bottle_button_pressed()) {
 		m_state = state_e::STATE_INCREASE_COUNTER;
 		cycles  = 0;
 	}
-	else if (m_buttons.is_user_button_pressed()) {
+	else if (buttons_is_user_button_pressed()) {
 		m_state = state_e::STATE_DECREASE_COUNTER;
 		cycles  = 0;
 	}
@@ -76,7 +75,7 @@ void state_machine_c::show_changed_counter()
 	else {
 		cycles  = 0;
 		m_state = state_e::STATE_STANDBY;
-		storage_c::save_counter(m_counter);
+		storage_save_counter(m_counter);
 	}
 }
 
@@ -111,7 +110,7 @@ void state_machine_c::increase_counter()
 
 	if (cycles < MAX_CYCLES_INCREASE_DECRASE) {
 
-		if (!m_buttons.is_bottle_button_pressed()) {
+		if (!buttons_is_bottle_button_pressed()) {
 			++cycles;
 		}
 
@@ -136,7 +135,7 @@ void state_machine_c::decrease_counter()
 
 	if (cycles < MAX_CYCLES_INCREASE_DECRASE) {
 
-		if (!m_buttons.is_user_button_pressed()) {
+		if (!buttons_is_user_button_pressed()) {
 			++cycles;
 		}
 
@@ -155,9 +154,9 @@ void state_machine_c::decrease_counter()
 
 void state_machine_c::init()
 {
-	storage_c::init();
+	storage_init();
 	m_display.init();
-	m_buttons.init();
+	buttons_init();
 	m_state   = state_e::STATE_STANDBY;
 	m_counter = 0;
 }
