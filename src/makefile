@@ -44,12 +44,8 @@ EXTRA_FLAGS = -DF_CPU=$(F_CPU)UL
 SOURCES  = main.cpp
 SOURCES += display.c
 SOURCES += buttons.c
-SOURCES += state_machine.cpp
+SOURCES += state_machine.c
 SOURCES += storage.c
-#SOURCES += core.c
-#SOURCES += logger.c
-#SOURCES += spritelist.cpp
-#SOURCES += ball.cpp
 
 ################################################################################
 # Building Object files 
@@ -71,14 +67,14 @@ OBJECTS = $(TMP2)
 ################################################################################
 # Compiler
 ################################################################################
-CC = avr-g++
+CC = avr-gcc
 
 CFLAGS = -I.                       # Include current file location to search path
 CFLAGS += -I..
 CFLAGS += -c                       # Compile and assemble, but do not link
 #CFLAGS += -g                       # Generate debug information in default format
 CFLAGS += -Os                      # Optimize for space rather than speed
-CFLAGS += -std=c++11               # Use this C standard
+CFLAGS += -std=c99                 # Use this C standard
 
 CFLAGS += -Werror                  # Treat all warnings as errors
 CFLAGS += -Wall                    # Print all warnings

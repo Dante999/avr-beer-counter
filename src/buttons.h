@@ -1,7 +1,7 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
-#include <stdint.h>
+#include <stdbool.h>
 
 void buttons_init();
 bool buttons_is_user_button_pressed();

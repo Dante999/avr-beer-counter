@@ -1,4 +1,4 @@
-#include "state_machine.hpp"
+#include "state_machine.h"
 
 #include <avr/sleep.h>
 
@@ -6,11 +6,10 @@
 #include "display.h"
 #include "storage.h"
 
-namespace {
-using cycles_t = uint16_t;
+typedef uint16_t cycles_t;
 
-constexpr cycles_t MAX_CYCLES_SHOW_COUNTER     = 10000;
-constexpr cycles_t MAX_CYCLES_INCREASE_DECRASE = 1000;
+#define MAX_CYCLES_SHOW_COUNTER     ((cycles_t)10000)
+#define MAX_CYCLES_INCREASE_DECRASE ((cycles_t)1000)
 
 enum state_e {
 	STATE_STANDBY,
@@ -21,19 +20,17 @@ enum state_e {
 	STATE_SHOW_ACHIEVEMENT
 };
 
-uint16_t m_counter;
-state_e  m_state;
+uint16_t     m_counter;
+enum state_e m_state;
 
-} // namespace
-
-void state_machine_c::standby()
+static void standby()
 {
 	if (buttons_is_user_button_pressed()) {
-		m_state   = state_e::STATE_SHOW_CURRENT_COUNTER;
+		m_state   = STATE_SHOW_CURRENT_COUNTER;
 		m_counter = storage_load_counter();
 	}
 	else if (buttons_is_bottle_button_pressed()) {
-		m_state   = state_e::STATE_INCREASE_COUNTER;
+		m_state   = STATE_INCREASE_COUNTER;
 		m_counter = storage_load_counter();
 	}
 
@@ -41,7 +38,7 @@ void state_machine_c::standby()
 	sleep_mode();
 }
 
-void state_machine_c::show_current_counter()
+static void show_current_counter()
 {
 	static cycles_t cycles = 0;
 
@@ -51,20 +48,20 @@ void state_machine_c::show_current_counter()
 	}
 	else {
 		cycles  = 0;
-		m_state = state_e::STATE_STANDBY;
+		m_state = STATE_STANDBY;
 	}
 }
 
-void state_machine_c::show_changed_counter()
+static void show_changed_counter()
 {
 	static cycles_t cycles = 0;
 
 	if (buttons_is_bottle_button_pressed()) {
-		m_state = state_e::STATE_INCREASE_COUNTER;
+		m_state = STATE_INCREASE_COUNTER;
 		cycles  = 0;
 	}
 	else if (buttons_is_user_button_pressed()) {
-		m_state = state_e::STATE_DECREASE_COUNTER;
+		m_state = STATE_DECREASE_COUNTER;
 		cycles  = 0;
 	}
 	else if (cycles < MAX_CYCLES_SHOW_COUNTER) {
@@ -73,12 +70,12 @@ void state_machine_c::show_changed_counter()
 	}
 	else {
 		cycles  = 0;
-		m_state = state_e::STATE_STANDBY;
+		m_state = STATE_STANDBY;
 		storage_save_counter(m_counter);
 	}
 }
 
-void state_machine_c::show_achievement()
+static void show_achievement()
 {
 	static cycles_t cycles = 0;
 
@@ -95,7 +92,7 @@ void state_machine_c::show_achievement()
 	}
 	else {
 		cycles  = 0;
-		m_state = state_e::STATE_SHOW_CHANGED_COUNTER;
+		m_state = STATE_SHOW_CHANGED_COUNTER;
 
 		if (m_counter > 9999) {
 			m_counter = 0;
@@ -103,7 +100,7 @@ void state_machine_c::show_achievement()
 	}
 }
 
-void state_machine_c::increase_counter()
+static void increase_counter()
 {
 	static cycles_t cycles = 0;
 
@@ -120,15 +117,15 @@ void state_machine_c::increase_counter()
 		++m_counter;
 
 		if (m_counter % 100 == 0) {
-			m_state = state_e::STATE_SHOW_ACHIEVEMENT;
+			m_state = STATE_SHOW_ACHIEVEMENT;
 		}
 		else {
-			m_state = state_e::STATE_SHOW_CHANGED_COUNTER;
+			m_state = STATE_SHOW_CHANGED_COUNTER;
 		}
 	}
 }
 
-void state_machine_c::decrease_counter()
+static void decrease_counter()
 {
 	static cycles_t cycles = 0;
 
@@ -147,39 +144,40 @@ void state_machine_c::decrease_counter()
 			--m_counter;
 		}
 
-		m_state = state_e::STATE_SHOW_CHANGED_COUNTER;
+		m_state = STATE_SHOW_CHANGED_COUNTER;
 	}
 }
 
-void state_machine_c::init()
+void state_machine_init()
 {
 	storage_init();
 	display_init();
 	buttons_init();
-	m_state   = state_e::STATE_STANDBY;
+
+	m_state   = STATE_STANDBY;
 	m_counter = 0;
 }
 
-void state_machine_c::run()
+void state_machine_run()
 {
 	switch (m_state) {
 
-	case state_e::STATE_STANDBY:
+	case STATE_STANDBY:
 		standby();
 		break;
-	case state_e::STATE_INCREASE_COUNTER:
+	case STATE_INCREASE_COUNTER:
 		increase_counter();
 		break;
-	case state_e::STATE_SHOW_CHANGED_COUNTER:
+	case STATE_SHOW_CHANGED_COUNTER:
 		show_changed_counter();
 		break;
-	case state_e::STATE_SHOW_ACHIEVEMENT:
+	case STATE_SHOW_ACHIEVEMENT:
 		show_achievement();
 		break;
-	case state_e::STATE_DECREASE_COUNTER:
+	case STATE_DECREASE_COUNTER:
 		decrease_counter();
 		break;
-	case state_e::STATE_SHOW_CURRENT_COUNTER:
+	case STATE_SHOW_CURRENT_COUNTER:
 		show_current_counter();
 		break;
 	}
