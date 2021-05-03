@@ -9,7 +9,7 @@
 typedef uint16_t cycles_t;
 
 #define MAX_CYCLES_SHOW_COUNTER     ((cycles_t)10000)
-#define MAX_CYCLES_INCREASE_DECRASE ((cycles_t)1000)
+#define MAX_CYCLES_INCREASE_DECRASE ((cycles_t)2000)
 
 enum state_e {
 	STATE_STANDBY,
@@ -110,7 +110,7 @@ static void increase_counter()
 			++cycles;
 		}
 
-		display_off();
+		display_show_number(m_counter);
 	}
 	else {
 		cycles = 0;
