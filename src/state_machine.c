@@ -25,6 +25,9 @@ enum state_e m_state;
 
 static void standby()
 {
+	set_sleep_mode(SLEEP_MODE_IDLE);
+	sleep_mode();
+
 	if (buttons_is_user_button_pressed()) {
 		m_state   = STATE_SHOW_CURRENT_COUNTER;
 		m_counter = storage_load_counter();
@@ -33,9 +36,6 @@ static void standby()
 		m_state   = STATE_INCREASE_COUNTER;
 		m_counter = storage_load_counter();
 	}
-
-	set_sleep_mode(SLEEP_MODE_IDLE);
-	sleep_mode();
 }
 
 static void show_current_counter()
