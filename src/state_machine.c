@@ -22,11 +22,14 @@ enum state_e {
 
 uint16_t     m_counter;
 enum state_e m_state;
+int8_t       m_diff_since_wakeup;
 
 static void standby()
 {
 	set_sleep_mode(SLEEP_MODE_IDLE);
 	sleep_mode();
+
+	m_diff_since_wakeup = 0;
 
 	if (buttons_is_user_button_pressed()) {
 		m_state   = STATE_SHOW_CURRENT_COUNTER;
@@ -115,6 +118,7 @@ static void increase_counter()
 	else {
 		cycles = 0;
 		++m_counter;
+		++m_diff_since_wakeup;
 
 		if (m_counter % 100 == 0) {
 			m_state = STATE_SHOW_ACHIEVEMENT;
@@ -140,8 +144,9 @@ static void decrease_counter()
 	else {
 		cycles = 0;
 
-		if (m_counter > 0) {
+		if (m_counter > 0 && m_diff_since_wakeup > 0) {
 			--m_counter;
+			--m_diff_since_wakeup;
 		}
 
 		m_state = STATE_SHOW_CHANGED_COUNTER;
