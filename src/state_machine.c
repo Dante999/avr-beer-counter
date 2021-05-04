@@ -8,8 +8,9 @@
 
 typedef uint16_t cycles_t;
 
-#define MAX_CYCLES_SHOW_COUNTER     ((cycles_t)10000)
-#define MAX_CYCLES_INCREASE_DECRASE ((cycles_t)2000)
+#define MAX_CYCLES_SHOW_COUNTER ((cycles_t)10000)
+#define MAX_CYCLES_INCREASE     ((cycles_t)2000)
+#define MAX_CYCLES_DECREASE     ((cycles_t)1000)
 
 enum state_e {
 	STATE_STANDBY,
@@ -107,7 +108,7 @@ static void increase_counter()
 {
 	static cycles_t cycles = 0;
 
-	if (cycles < MAX_CYCLES_INCREASE_DECRASE) {
+	if (cycles < MAX_CYCLES_INCREASE) {
 
 		if (!buttons_is_bottle_button_pressed()) {
 			++cycles;
@@ -133,13 +134,13 @@ static void decrease_counter()
 {
 	static cycles_t cycles = 0;
 
-	if (cycles < MAX_CYCLES_INCREASE_DECRASE) {
+	if (cycles < MAX_CYCLES_DECREASE) {
 
 		if (!buttons_is_user_button_pressed()) {
 			++cycles;
 		}
 
-		display_off();
+		display_show_number(m_counter);
 	}
 	else {
 		cycles = 0;
