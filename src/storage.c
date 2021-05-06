@@ -2,6 +2,10 @@
 
 #include <avr/eeprom.h>
 
+#ifndef COUNTER_PRESET
+#	define COUNTER_PRESET 0
+#endif
+
 static uint8_t m_is_initialized EEMEM = 0;
 static uint16_t m_counter1      EEMEM = 0;
 static uint16_t m_counter2      EEMEM = 0;
@@ -10,7 +14,7 @@ void storage_init()
 {
 	if (eeprom_read_byte(&m_is_initialized) != 1) {
 		eeprom_write_byte(&m_is_initialized, 1);
-		storage_save_counter(0);
+		storage_save_counter(COUNTER_PRESET);
 	}
 }
 

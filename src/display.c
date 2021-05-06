@@ -31,10 +31,10 @@ enum digit_e { //
 };
 
 static uint16_t m_last = 0;
-static uint8_t  m_n0   = 0;
-static uint8_t  m_n1   = 0;
-static uint8_t  m_n2   = 0;
-static uint8_t  m_n3   = 0;
+static int8_t   m_n0   = 0;
+static int8_t   m_n1   = 0;
+static int8_t   m_n2   = 0;
+static int8_t   m_n3   = 0;
 
 static inline void turn_segments_off()
 {
@@ -114,11 +114,14 @@ static void select_digit(enum digit_e digit)
 	}
 }
 
-static void show_segments_for_digit(uint8_t digit)
+static void show_segments_for_digit(int8_t digit)
 {
 	turn_segments_off();
 
 	switch (digit) {
+	case -1:
+		turn_segments_off();
+		break;
 	case 0:
 		SEG_PORT |= SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F;
 		break;

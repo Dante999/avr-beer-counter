@@ -19,20 +19,28 @@ void buttons_init()
 
 ISR(INT1_vect)
 {
-	// only used for waking up the controller...
+	/*
+	 * Nothing to do, the interrupt is only needed wo wakeup the controller.
+	 * Do not remove this function even it is empty or the controller will
+	 * crash when the interrupt is triggered.
+	 */
 }
 
 ISR(INT0_vect)
 {
-	// only used for waking up the controller...
+	/*
+	 * Nothing to do, the interrupt is only needed wo wakeup the controller.
+	 * Do not remove this function even it is empty or the controller will
+	 * crash when the interrupt is triggered.
+	 */
 }
 
-bool buttons_is_user_button_pressed()
+bool is_user_button_pressed()
 {
 	return !(PIND & (1 << PD3)) ? true : false;
 }
 
-bool buttons_is_bottle_button_pressed()
+bool is_bottle_button_pressed()
 {
 	return !(PIND & (1 << PD2)) ? true : false;
 }

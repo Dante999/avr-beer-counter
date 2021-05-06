@@ -1,6 +1,7 @@
 #include "state_machine.h"
 
 #include <avr/sleep.h>
+#include <util/delay.h>
 
 #include "buttons.h"
 #include "display.h"
@@ -12,18 +13,17 @@ typedef uint16_t cycles_t;
 #define MAX_CYCLES_INCREASE     ((cycles_t)2000)
 #define MAX_CYCLES_DECREASE     ((cycles_t)1000)
 
-enum state_e {
+enum { //
 	STATE_STANDBY,
 	STATE_INCREASE_COUNTER,
 	STATE_DECREASE_COUNTER,
 	STATE_SHOW_CHANGED_COUNTER,
 	STATE_SHOW_CURRENT_COUNTER,
 	STATE_SHOW_ACHIEVEMENT
-};
+} m_state;
 
-uint16_t     m_counter;
-enum state_e m_state;
-int8_t       m_diff_since_wakeup;
+uint16_t m_counter;
+int8_t   m_diff_since_wakeup;
 
 static void standby()
 {
@@ -32,11 +32,11 @@ static void standby()
 
 	m_diff_since_wakeup = 0;
 
-	if (buttons_is_user_button_pressed()) {
+	if (is_user_button_pressed()) {
 		m_state   = STATE_SHOW_CURRENT_COUNTER;
 		m_counter = storage_load_counter();
 	}
-	else if (buttons_is_bottle_button_pressed()) {
+	else if (is_bottle_button_pressed()) {
 		m_state   = STATE_INCREASE_COUNTER;
 		m_counter = storage_load_counter();
 	}
@@ -60,11 +60,11 @@ static void show_changed_counter()
 {
 	static cycles_t cycles = 0;
 
-	if (buttons_is_bottle_button_pressed()) {
+	if (is_bottle_button_pressed()) {
 		m_state = STATE_INCREASE_COUNTER;
 		cycles  = 0;
 	}
-	else if (buttons_is_user_button_pressed()) {
+	else if (is_user_button_pressed()) {
 		m_state = STATE_DECREASE_COUNTER;
 		cycles  = 0;
 	}
@@ -110,7 +110,7 @@ static void increase_counter()
 
 	if (cycles < MAX_CYCLES_INCREASE) {
 
-		if (!buttons_is_bottle_button_pressed()) {
+		if (!is_bottle_button_pressed()) {
 			++cycles;
 		}
 
@@ -136,7 +136,7 @@ static void decrease_counter()
 
 	if (cycles < MAX_CYCLES_DECREASE) {
 
-		if (!buttons_is_user_button_pressed()) {
+		if (!is_user_button_pressed()) {
 			++cycles;
 		}
 
